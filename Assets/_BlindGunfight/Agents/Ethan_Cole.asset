@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34bfdd4969940ba45b2df531c99ff17a, type: 3}
+  m_Name: Ethan_Cole
+  m_EditorClassIdentifier: 
+  agentName: Ethan Cole
+  role: "\uB3CC\uACA9"
+  description: "\uAD6D\uAC00 \uD2B9\uC218 \uAD6C\uC870\uD300 \uD300\uC7A5. \uD5EC\uAE30
+    \uCD94\uB77D\uC5D0\uC11C \uC0B4\uC544\uB0A8\uC544 \uD769\uC5B4\uC9C4 \uD300\uC744
+    \uB2E4\uC2DC \uBAA8\uC740\uB2E4. \uC5B4\uB5A4 \uAC70\uB9AC\uC5D0\uC11C\uB3C4
+    \uBB34\uB09C\uD55C \uC18C\uCD1D\uC73C\uB85C \uD300\uC758 \uC911\uC2EC\uC744 \uC7A1\uB294\uB2E4."
+  themeColor: {r: 0.95, g: 0.78, b: 0.2, a: 1}
+  portrait: {fileID: 0}
+  locked: 0
+  maxHealth: 100
+  moveSpeedMultiplier: 1
+  primaryWeapon: {fileID: 11400000, guid: 2a46ffecd5e1b8840994c6e874d0456b, type: 2}
+  secondaryWeapon: {fileID: 11400000, guid: 55bdf394cec28fa4fb44e1cdfad90eea, type: 2}
+  signatureTool: "\uC12C\uAD11\uD0C4"
+  tool: "\uD30C\uD3B8\uC218\uB958\uD0C4"

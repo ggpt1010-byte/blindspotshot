@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea95cb8bfd3edb44fba614182910aa5a, type: 3}
+  m_Name: DMR
+  m_EditorClassIdentifier: 
+  displayName: DMR
+  damage: 55
+  pellets: 1
+  spread: 1.5
+  range: 30
+  fireRate: 1.6
+  automatic: 0
+  magazineSize: 10
+  reloadTime: 2.2
+  recoilPerShot: 5
+  maxRecoil: 8
+  recoilRecovery: 12
+  noiseRadius: 24

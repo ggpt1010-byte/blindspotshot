@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34bfdd4969940ba45b2df531c99ff17a, type: 3}
+  m_Name: Marcus_Reyes
+  m_EditorClassIdentifier: 
+  agentName: Marcus Reyes
+  role: "\uB3CC\uD30C"
+  description: "\uAD6C\uC870\uD300 \uB3CC\uD30C \uB2F4\uB2F9. \uB290\uB9AC\uC9C0\uB9CC
+    \uB2E8\uB2E8\uD558\uB2E4. \uC0B0\uD0C4\uCD1D\uC73C\uB85C \uC881\uC740 \uBCF5\uB3C4\uC640
+    \uC880\uBE44 \uBB34\uB9AC\uB97C \uC815\uB9AC\uD55C\uB2E4."
+  themeColor: {r: 0.85, g: 0.35, b: 0.25, a: 1}
+  portrait: {fileID: 0}
+  locked: 0
+  maxHealth: 120
+  moveSpeedMultiplier: 0.92
+  primaryWeapon: {fileID: 11400000, guid: e8d3dee0b69dd5a4bb944f88aa1a41f7, type: 2}
+  secondaryWeapon: {fileID: 11400000, guid: 55bdf394cec28fa4fb44e1cdfad90eea, type: 2}
+  signatureTool: "\uB3CC\uD30C \uD3ED\uC57D"
+  tool: "\uD30C\uD3B8\uC218\uB958\uD0C4"
