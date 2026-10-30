@@ -38,6 +38,7 @@ namespace BlindGunfight
 
         private EnemyMotor motor;
         private Perception perception;
+        private Stance stance;
 
         private State state = State.Patrol;
         private int waypointIndex;
@@ -54,6 +55,7 @@ namespace BlindGunfight
         {
             motor = GetComponent<EnemyMotor>();
             perception = GetComponent<Perception>();
+            stance = GetComponent<Stance>();
             if (gun == null) gun = GetComponentInChildren<Gun>();
         }
 
@@ -63,6 +65,7 @@ namespace BlindGunfight
         private void Update()
         {
             if (perception.Target != null) EnterCombat();
+            if (state != State.Combat && stance != null) stance.SetCrouching(false);
 
             switch (state)
             {
@@ -117,8 +120,13 @@ namespace BlindGunfight
             }
 
             Vector3 toTarget = (target.transform.position - motor.Position).XZ();
-            if (toTarget.magnitude > preferredRange) motor.MoveTowards(target.transform.position, combatSpeed, false);
+            bool moving = toTarget.magnitude > preferredRange;
+            if (moving) motor.MoveTowards(target.transform.position, combatSpeed, false);
             else motor.Stop();
+
+            // 멈춰서 쏘거나 재장전할 때는 앉는다. 앉은 상대는 낮게 쏴서 머리를 노린다.
+            if (stance != null) stance.SetCrouching(!moving || (gun != null && gun.IsReloading));
+            if (gun != null) gun.LowAim = target.TryGetComponent(out Stance targetStance) && targetStance.Crouching;
             motor.FaceDirection(toTarget);
 
             if (gun == null || Time.time < canShootTime || Time.time < burstResumeTime) return;

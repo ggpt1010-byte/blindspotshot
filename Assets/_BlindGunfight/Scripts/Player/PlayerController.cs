@@ -25,6 +25,7 @@ namespace BlindGunfight
         [SerializeField] private FieldOfView fieldOfView;
 
         private Rigidbody rb;
+        private Stance stance;
         private Vector3 moveInput;
         private float nextFootstepTime;
 
@@ -42,6 +43,7 @@ namespace BlindGunfight
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
             if (fieldOfView == null) fieldOfView = GetComponent<FieldOfView>();
+            stance = GetComponent<Stance>();
         }
 
         private void Update()
@@ -57,6 +59,7 @@ namespace BlindGunfight
             IsRunning = GameInput.Run && !IsAiming && !IsCrouching && moveInput.sqrMagnitude > 0.01f;
 
             if (fieldOfView != null) fieldOfView.Aiming = IsAiming;
+            if (stance != null) stance.SetCrouching(IsCrouching);
 
             if (rig != null)
             {

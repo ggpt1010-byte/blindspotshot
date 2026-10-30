@@ -470,6 +470,7 @@ namespace BlindGunfight.EditorTools
             SetString(health, "displayName", displayName);
 
             go.AddComponent<DeathHandler>();
+            go.AddComponent<Stance>();
             return go;
         }
 
