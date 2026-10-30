@@ -78,7 +78,7 @@ namespace BlindGunfight
 
 #if ENABLE_INPUT_SYSTEM
         private static bool RawRun => Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
-        private static bool RawCrouch => Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.cKey.isPressed);
+        private static bool RawCrouch => Keyboard.current != null && Keyboard.current.cKey.isPressed;
         private static bool RawReloadPressed => Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame;
         private static bool RawMeleePressed => Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame;
         private static bool RawSpotPressed => Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
@@ -92,7 +92,7 @@ namespace BlindGunfight
         private static bool RawAim => Mouse.current != null && Mouse.current.rightButton.isPressed;
 #else
         private static bool RawRun => Input.GetKey(KeyCode.LeftShift);
-        private static bool RawCrouch => Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
+        private static bool RawCrouch => Input.GetKey(KeyCode.C);
         private static bool RawReloadPressed => Input.GetKeyDown(KeyCode.R);
         private static bool RawMeleePressed => Input.GetKeyDown(KeyCode.F);
         private static bool RawSpotPressed => Input.GetKeyDown(KeyCode.Q);
