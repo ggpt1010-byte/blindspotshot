@@ -275,7 +275,7 @@ namespace BlindGunfight.EditorTools
             viewLight.spotAngle = 90f;
             viewLight.innerSpotAngle = 72f;
             viewLight.range = 16f;
-            viewLight.intensity = 10f;
+            viewLight.intensity = 18f;
             viewLight.color = new Color(1f, 0.97f, 0.9f);
             viewLight.shadows = LightShadows.Soft;
 
