@@ -32,6 +32,8 @@ namespace BlindGunfight
         public float RecoilAngle => recoilAngle;
         /// <summary>반동 배율. 플레이어가 조준 중이면 줄인다.</summary>
         public float RecoilMultiplier { get; set; } = 1f;
+        /// <summary>낮게 쏘기 (플레이어는 Ctrl). 앉은 적의 머리를 노린다.</summary>
+        public bool LowAim { get; set; }
         public Vector3 MuzzlePosition => muzzle != null ? muzzle.position : transform.position + Vector3.up * 1.1f;
         public LayerMask HitMask => hitMask;
 
@@ -147,7 +149,8 @@ namespace BlindGunfight
                 bool sameSide = target != null && ownerHealth != null && !Factions.AreHostile(target.Faction, ownerHealth.Faction);
                 if (target != null && !sameSide && !target.IsDead)
                 {
-                    HitZone zone = EvaluateZone(origin, direction, hit.collider);
+                    bool crouching = target.TryGetComponent(out Stance stance) && stance.Crouching;
+                    HitZone zone = EvaluateZone(origin, direction, hit.collider, LowAim, crouching);
                     float damage = weapon.damage * HitZones.DamageMultiplier(zone);
                     target.TakeDamage(damage, owner);
                     HitLanded?.Invoke(target, zone, damage);
@@ -164,13 +167,13 @@ namespace BlindGunfight
         /// <summary>
         /// 탄의 직선이 맞은 캐릭터 중심(위에서 본 원)에서 얼마나 떨어져 지나갔는지로 부위를 정한다.
         /// </summary>
-        private static HitZone EvaluateZone(Vector3 origin, Vector3 direction, Collider col)
+        private static HitZone EvaluateZone(Vector3 origin, Vector3 direction, Collider col, bool lowAim, bool targetCrouching)
         {
             Bounds bounds = col.bounds;
             float radius = Mathf.Max(0.01f, Mathf.Min(bounds.extents.x, bounds.extents.z));
             Vector3 toCenter = (bounds.center - origin).XZ();
             float offset = Mathf.Abs(toCenter.x * direction.z - toCenter.z * direction.x);
-            return HitZones.Evaluate(offset / radius);
+            return HitZones.Evaluate(offset / radius, lowAim, targetCrouching);
         }
     }
 }
