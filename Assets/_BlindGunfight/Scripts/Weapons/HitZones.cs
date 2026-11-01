@@ -19,6 +19,18 @@ namespace BlindGunfight
         public const float BodyMaxRatio = 0.6f;
         public const float LimbMaxRatio = 0.85f;
 
+        /// <summary>
+        /// 낮게 쏘기(Ctrl)와 상대 자세까지 따진 판정.
+        /// 서 있는 적: 보통은 머리까지, 낮게 쏘면 다리(팔다리/스침)만 맞는다.
+        /// 앉은 적: 보통으로 쏘면 머리 위로 지나가 몸통/스침, 낮게 쏴야 머리까지 맞는다.
+        /// </summary>
+        public static HitZone Evaluate(float offsetRatio, bool lowAim, bool targetCrouching)
+        {
+            if (lowAim == targetCrouching) return Evaluate(offsetRatio);
+            if (lowAim) return offsetRatio <= BodyMaxRatio ? HitZone.Limb : HitZone.Graze;
+            return offsetRatio <= BodyMaxRatio ? HitZone.Body : HitZone.Graze;
+        }
+
         public static HitZone Evaluate(float offsetRatio)
         {
             if (offsetRatio <= HeadMaxRatio) return HitZone.Head;

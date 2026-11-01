@@ -248,6 +248,8 @@ namespace BlindGunfight
             Vector3 screen = cam.WorldToScreenPoint(lookAt);
             input.MouseScreenPosition = new Vector2(screen.x, screen.y);
             input.Aim = visible && inRange;
+            // 앉은 적은 낮게 쏘기(Ctrl)로 머리를 노린다
+            input.LowAim = visible && target.TryGetComponent(out Stance targetStance) && targetStance.Crouching;
 
             // 처음 본 적은 Q 로 스팟
             if (visible && target != lastSpotted)

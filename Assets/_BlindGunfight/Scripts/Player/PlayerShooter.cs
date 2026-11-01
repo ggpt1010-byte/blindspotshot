@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BlindGunfight
 {
-    /// <summary>좌클릭 사격, R 재장전. 조준(우클릭)하지 않으면 탄이 더 퍼지고 반동도 크다.</summary>
+    /// <summary>좌클릭 사격, R 재장전, Ctrl 낮게 쏘기. 조준(우클릭)하지 않으면 탄이 더 퍼지고 반동도 크다.</summary>
     [RequireComponent(typeof(PlayerController))]
     public class PlayerShooter : MonoBehaviour
     {
@@ -28,6 +28,7 @@ namespace BlindGunfight
 
             if (GameInput.ReloadPressed) gun.Reload();
             gun.RecoilMultiplier = controller.IsAiming ? aimRecoilMultiplier : 1f;
+            gun.LowAim = GameInput.LowAim;
 
             bool trigger = gun.Weapon.automatic ? GameInput.Fire : GameInput.FirePressed;
             if (trigger)

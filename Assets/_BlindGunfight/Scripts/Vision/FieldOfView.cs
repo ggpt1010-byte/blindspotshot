@@ -14,12 +14,12 @@ namespace BlindGunfight
 
         [Header("기본 시야")]
         [SerializeField] private float viewAngle = 90f;
-        [SerializeField] private float viewDistance = 7f; // 어둡고 긴장감 있게: 밝게 보이는 범위와 맞춘다
+        [SerializeField] private float viewDistance = 12f; // 2026-10-30 직접 플레이: 7m는 답답해서 다시 넓힘
         [SerializeField] private float closeRadius = 2f;
 
         [Header("조준 시야 (우클릭)")]
         [SerializeField] private float aimAngle = 50f;
-        [SerializeField] private float aimDistance = 10f;
+        [SerializeField] private float aimDistance = 16f;
         [SerializeField] private float transitionSpeed = 10f;
 
         [Header("벽")]

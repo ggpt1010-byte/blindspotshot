@@ -234,7 +234,7 @@ namespace BlindGunfight
         {
             string[] lines =
             {
-                "Aim  RMB", "Fire  LMB", "Walk  WASD", "Run  Shift", "Crouch  Ctrl / C",
+                "Aim  RMB", "Fire  LMB", "Walk  WASD", "Run  Shift", "Crouch  C", "Low aim  Ctrl",
                 "Reload  R", "Knife  F", "Spot  Q", "Weapon  1 / 2", "Lobby  Esc",
             };
             // 오른쪽 위에 둔다 (오른쪽 아래 체력바/무기 슬롯을 가리지 않게)

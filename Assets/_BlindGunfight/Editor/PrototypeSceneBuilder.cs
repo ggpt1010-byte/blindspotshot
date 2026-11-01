@@ -117,13 +117,13 @@ namespace BlindGunfight.EditorTools
         {
             RenderSettings.skybox = null;
             RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = new Color(0.10f, 0.11f, 0.14f);
+            RenderSettings.ambientLight = new Color(0.16f, 0.17f, 0.20f);
             RenderSettings.fog = false;
 
             // 시야 밖도 지형은 어렴풋이 보이게 하는 약한 달빛
             var moon = new GameObject("Dim Directional Light").AddComponent<Light>();
             moon.type = LightType.Directional;
-            moon.intensity = 0.25f;
+            moon.intensity = 0.4f;
             moon.color = new Color(0.6f, 0.68f, 0.85f);
             moon.shadows = LightShadows.Soft;
             moon.transform.rotation = Quaternion.Euler(55f, -30f, 0f);
@@ -274,8 +274,8 @@ namespace BlindGunfight.EditorTools
             viewLight.type = LightType.Spot;
             viewLight.spotAngle = 90f;
             viewLight.innerSpotAngle = 72f;
-            viewLight.range = 11f;
-            viewLight.intensity = 6f;
+            viewLight.range = 16f;
+            viewLight.intensity = 10f;
             viewLight.color = new Color(1f, 0.97f, 0.9f);
             viewLight.shadows = LightShadows.Soft;
 
@@ -401,7 +401,7 @@ namespace BlindGunfight.EditorTools
 
             var perception = go.AddComponent<Perception>();
             SetLayerMask(perception, "obstacleMask", obstacleMask);
-            SetFloat(perception, "viewDistance", 8f); // 플레이어(7m)보다 멀리 보지 않게
+            SetFloat(perception, "viewDistance", 10f); // 플레이어 시야(12m)보다 조금 짧게
 
             var gun = AddGun(go, weapon, tracer);
 
@@ -470,6 +470,7 @@ namespace BlindGunfight.EditorTools
             SetString(health, "displayName", displayName);
 
             go.AddComponent<DeathHandler>();
+            go.AddComponent<Stance>();
             return go;
         }
 
