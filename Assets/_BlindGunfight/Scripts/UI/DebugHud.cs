@@ -12,7 +12,7 @@ namespace BlindGunfight
     {
         [SerializeField] private Health playerHealth;
         [SerializeField] private PlayerShooter playerShooter;
-        [SerializeField] private float nameplateHeight = 2.2f;
+        [SerializeField] private float nameplateHeight = 2.6f; // 1.75 m 모델 머리 위
 
         private PlayerLoadout loadout;
 

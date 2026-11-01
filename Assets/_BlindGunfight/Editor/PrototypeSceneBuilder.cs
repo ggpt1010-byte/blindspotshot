@@ -319,7 +319,7 @@ namespace BlindGunfight.EditorTools
             SetObject(laser, "gun", gun);
             SetObject(laser, "controller", controller);
 
-            AttachModel(go, "Characters_Matt", 0.85f, human: true, Color.white);
+            AttachModel(go, "Characters_Matt", HumanModelScale, human: true, Color.white);
             return go;
         }
 
@@ -430,13 +430,15 @@ namespace BlindGunfight.EditorTools
 
             // Greywolf 는 사람 모델 3종을 돌려 쓰고, 붉은 회색으로 물들여 플레이어와 구분한다
             string[] models = { "Characters_Sam", "Characters_Shaun", "Characters_Lis" };
-            AttachModel(go, models[soldierModelIndex++ % models.Length], 0.85f, human: true, new Color(0.85f, 0.5f, 0.45f));
+            AttachModel(go, models[soldierModelIndex++ % models.Length], HumanModelScale, human: true, new Color(0.85f, 0.5f, 0.45f));
         }
 
         // ---------- 캐릭터 모델 (Quaternius Zombie Apocalypse Kit, CC0) ----------
 
         private const string ModelFolder = Root + "/Art/ThirdParty/Quaternius_ZombieApocalypse";
         private const string AnimationFolder = Root + "/Animation";
+        // R2 비율(머리 70%, 허벅지 +10%)에서 키 약 1.75 m 가 되는 배율 (원래 0.85 = 1.16 m 로 꼬마처럼 보였다)
+        private const float HumanModelScale = 1.43f;
         private static int soldierModelIndex;
         private static readonly Dictionary<string, RuntimeAnimatorController> controllers = new Dictionary<string, RuntimeAnimatorController>();
         private static readonly string[] HumanWeaponParts = { "Axe", "Guitar", "Knife", "Pistol", "Rifle", "Shotgun", "SMG", "Spear", "WoodenBat_Barbed", "WoodenBat_Saw" };
@@ -478,6 +480,8 @@ namespace BlindGunfight.EditorTools
             animator.runtimeAnimatorController = controller;
             animator.applyRootMotion = false;
             animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+
+            if (human) instance.AddComponent<BodyProportions>(); // 기본값 = R2
 
             var weapons = new List<Object>();
             if (human)
