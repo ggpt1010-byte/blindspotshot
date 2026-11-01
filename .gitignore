@@ -36,3 +36,10 @@ build.log
 *.slnx
 capture_editor*.log
 build*.log
+
+# Third-party packs: used locally, not redistributed (see Assets/ThirdParty/README.md)
+/Assets/ThirdParty/*
+!/Assets/ThirdParty/README.md
+!/Assets/ThirdParty/README.md.meta
+/Assets/ThirdParty.meta
+/My project/

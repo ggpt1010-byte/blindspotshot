@@ -46,6 +46,7 @@ namespace BlindGunfight.EditorTools
                 return;
             if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
+            controllers.Clear();
             obstacleLayer = EnsureLayer(ObstacleLayerName);
             characterLayer = EnsureLayer(CharacterLayerName);
             if (obstacleLayer < 0 || characterLayer < 0)
@@ -318,6 +319,7 @@ namespace BlindGunfight.EditorTools
             SetObject(laser, "gun", gun);
             SetObject(laser, "controller", controller);
 
+            AttachModel(go, "Characters_Matt", 0.85f, human: true, Color.white);
             return go;
         }
 
@@ -377,10 +379,16 @@ namespace BlindGunfight.EditorTools
             SetFloat(ai, "chaseSpeed", chase);
             SetFloat(ai, "attackRange", 1.1f);
             SetBool(ai, "screamsOnSight", scream);
+
+            // Walker = 기본 좀비, Runner = 팔 긴 좀비, Screamer = 뚱뚱한 좀비
+            if (name == "Runner") AttachModel(go, "Zombie_Arm", 1.2f, human: false, Color.white);
+            else if (name == "Screamer") AttachModel(go, "Zombie_Chubby", 1.15f, human: false, Color.white);
+            else AttachModel(go, "Zombie_Basic", 1.4f, human: false, Color.white);
         }
 
         private static void BuildSoldiers(WeaponData smg, WeaponData rifle, WeaponData shotgun, BulletTracer tracer)
         {
+            soldierModelIndex = 0;
             var parent = new GameObject("Greywolf").transform;
             var waypointRoot = new GameObject("Waypoints").transform;
 
@@ -419,6 +427,135 @@ namespace BlindGunfight.EditorTools
             SetFloat(ai, "reactionTime", 0.35f);
             SetFloat(ai, "inaccuracy", 6f);
             SetObjectArray(ai, "waypoints", waypoints);
+
+            // Greywolf 는 사람 모델 3종을 돌려 쓰고, 붉은 회색으로 물들여 플레이어와 구분한다
+            string[] models = { "Characters_Sam", "Characters_Shaun", "Characters_Lis" };
+            AttachModel(go, models[soldierModelIndex++ % models.Length], 0.85f, human: true, new Color(0.85f, 0.5f, 0.45f));
+        }
+
+        // ---------- 캐릭터 모델 (Quaternius Zombie Apocalypse Kit, CC0) ----------
+
+        private const string ModelFolder = Root + "/Art/ThirdParty/Quaternius_ZombieApocalypse";
+        private const string AnimationFolder = Root + "/Animation";
+        private static int soldierModelIndex;
+        private static readonly Dictionary<string, RuntimeAnimatorController> controllers = new Dictionary<string, RuntimeAnimatorController>();
+        private static readonly string[] HumanWeaponParts = { "Axe", "Guitar", "Knife", "Pistol", "Rifle", "Shotgun", "SMG", "Spear", "WoodenBat_Barbed", "WoodenBat_Saw" };
+
+        /// <summary>
+        /// 임시 도형(캡슐/구/총 상자)을 지우고 모델을 자식으로 붙인다. 충돌체와 로직은 그대로다.
+        /// human 이면 총을 든 이동 애니메이션(Idle_Gun/Walk_Gun/Run_Gun)을 쓴다.
+        /// </summary>
+        private static void AttachModel(GameObject character, string model, float scale, bool human, Color tint)
+        {
+            for (int i = character.transform.childCount - 1; i >= 0; i--)
+            {
+                var child = character.transform.GetChild(i).gameObject;
+                if (child.GetComponent<MeshFilter>() != null && child.GetComponent<MeshRenderer>() != null)
+                    Object.DestroyImmediate(child);
+            }
+
+            string path = $"{ModelFolder}/{model}.fbx";
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab == null)
+            {
+                Debug.LogWarning($"[BlindGunfight] 모델이 없습니다: {path} (임시 도형 없이 진행)");
+                return;
+            }
+
+            var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            instance.name = "Model";
+            instance.transform.SetParent(character.transform, false);
+            instance.transform.localPosition = Vector3.zero;
+            instance.transform.localRotation = Quaternion.identity; // 모델은 +Z 를 본다
+            instance.transform.localScale = Vector3.one * scale;
+            SetLayerRecursive(instance, character.layer);
+
+            var animator = instance.GetComponent<Animator>();
+            if (animator == null) animator = instance.AddComponent<Animator>();
+            // 같은 모델은 컨트롤러를 한 번만 만들어 같이 쓴다 (다시 만들면 앞서 붙인 참조가 끊긴다)
+            if (!controllers.TryGetValue(model, out var controller) || controller == null)
+                controllers[model] = controller = CreateController(model, path, human);
+            animator.runtimeAnimatorController = controller;
+            animator.applyRootMotion = false;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+
+            var weapons = new List<Object>();
+            if (human)
+            {
+                foreach (var t in instance.GetComponentsInChildren<Transform>(true))
+                    if (System.Array.IndexOf(HumanWeaponParts, t.name) >= 0) weapons.Add(t.gameObject);
+            }
+
+            var characterAnimator = character.AddComponent<CharacterAnimator>();
+            SetObject(characterAnimator, "animator", animator);
+            Set(characterAnimator, "tint", x => x.colorValue = tint);
+            SetObjectArray(characterAnimator, "weaponModels", weapons.ToArray());
+        }
+
+        private static void SetLayerRecursive(GameObject go, int layer)
+        {
+            foreach (var t in go.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = layer;
+        }
+
+        /// <summary>Speed(0 서기 ~ 걷기 ~ 달리기) 블렌드 트리와 Dead 트리거를 가진 컨트롤러를 만든다.</summary>
+        private static RuntimeAnimatorController CreateController(string model, string fbxPath, bool human)
+        {
+            string idle = human ? "Idle_Gun" : "Idle";
+            string walk = human ? "Walk_Gun" : "Walk";
+            string run = human ? "Run_Gun" : "Run";
+            SetLooping(fbxPath, idle, walk, run);
+
+            var clips = new Dictionary<string, AnimationClip>();
+            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(fbxPath))
+            {
+                if (asset is AnimationClip clip && !clip.name.StartsWith("__preview"))
+                    clips[clip.name.Substring(clip.name.LastIndexOf('|') + 1)] = clip;
+            }
+
+            EnsureFolder(AnimationFolder);
+            string controllerPath = $"{AnimationFolder}/{model}.controller";
+            AssetDatabase.DeleteAsset(controllerPath);
+            var controller = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
+            controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
+            controller.AddParameter("Dead", AnimatorControllerParameterType.Trigger);
+
+            var locomotion = controller.CreateBlendTreeInController("Locomotion", out var tree, 0);
+            tree.blendParameter = "Speed";
+            tree.useAutomaticThresholds = false;
+            if (clips.TryGetValue(idle, out var idleClip)) tree.AddChild(idleClip, 0f);
+            if (clips.TryGetValue(walk, out var walkClip)) tree.AddChild(walkClip, human ? 2.2f : 1.2f);
+            if (clips.TryGetValue(run, out var runClip)) tree.AddChild(runClip, human ? 4.5f : 3.5f);
+            controller.layers[0].stateMachine.defaultState = locomotion;
+
+            if (clips.TryGetValue("Death", out var deathClip))
+            {
+                var sm = controller.layers[0].stateMachine;
+                var death = sm.AddState("Death");
+                death.motion = deathClip;
+                var toDeath = sm.AddAnyStateTransition(death);
+                toDeath.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0f, "Dead");
+                toDeath.canTransitionToSelf = false;
+                toDeath.duration = 0.1f;
+            }
+            AssetDatabase.SaveAssets();
+            return controller;
+        }
+
+        /// <summary>이동 클립은 반복, 죽는 클립은 한 번만 재생되게 가져오기 설정을 바꾼다.</summary>
+        private static void SetLooping(string fbxPath, params string[] loopNames)
+        {
+            var importer = (ModelImporter)AssetImporter.GetAtPath(fbxPath);
+            var clips = importer.clipAnimations.Length > 0 ? importer.clipAnimations : importer.defaultClipAnimations;
+            bool changed = false;
+            foreach (var clip in clips)
+            {
+                string shortName = clip.name.Substring(clip.name.LastIndexOf('|') + 1);
+                bool loop = System.Array.IndexOf(loopNames, shortName) >= 0;
+                if (clip.loopTime != loop) { clip.loopTime = loop; changed = true; }
+            }
+            if (!changed && importer.clipAnimations.Length > 0) return;
+            importer.clipAnimations = clips;
+            importer.SaveAndReimport();
         }
 
         private static GameObject CreateEnemy(Transform parent, string name, string displayName, Color color, Vector3 position, Faction faction, float hp)

@@ -43,10 +43,13 @@ namespace BlindGunfight
             }
             foreach (var col in GetComponentsInChildren<Collider>()) col.enabled = false;
 
-            // 옆으로 쓰러뜨린다.
-            transform.SetPositionAndRotation(
-                new Vector3(transform.position.x, 0.3f, transform.position.z),
-                Quaternion.Euler(0f, transform.eulerAngles.y, 0f) * Quaternion.Euler(0f, 0f, 90f));
+            // 죽는 애니메이션이 없는 모델만 옆으로 쓰러뜨린다.
+            if (!(TryGetComponent(out CharacterAnimator characterAnimator) && characterAnimator.HasDeathAnimation))
+            {
+                transform.SetPositionAndRotation(
+                    new Vector3(transform.position.x, 0.3f, transform.position.z),
+                    Quaternion.Euler(0f, transform.eulerAngles.y, 0f) * Quaternion.Euler(0f, 0f, 90f));
+            }
 
             var block = new MaterialPropertyBlock();
             foreach (var r in GetComponentsInChildren<Renderer>())
